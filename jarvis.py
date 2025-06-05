@@ -14,13 +14,11 @@ and provides voice control over a remote music bot service.
 
 from wake_word import wait_for_wake_word
 from transcribe import record_and_transcribe
-from pynput.keyboard import Controller
 from dotenv import load_dotenv
 import pyttsx3, requests, pyaudio, os, time, threading, queue
 
 # Initialize environment variables and global service objects
 load_dotenv()                                 # Load configuration from .env file
-keyboard = Controller()                       # For potential keyboard control
 
 # ─── async, interruptible text-to-speech ────────────────────────────────
 class AsyncTTS:
