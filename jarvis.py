@@ -16,7 +16,24 @@ from wake_word import wait_for_wake_word
 from transcribe import record_and_transcribe
 from pynput.keyboard import Controller
 from dotenv import load_dotenv
-import pyttsx3, requests, pyaudio, os, time, threading, queue
+import pyttsx3
+import requests
+import pyaudio
+import os
+import time
+import threading
+import queue
+
+# ─── console formatting helpers ──────────────────────────────────────────
+GREEN = "\033[92m"
+BOLD = "\033[1m"
+RESET = "\033[0m"
+
+
+def log_packet(command: str, payload: dict) -> None:
+    """Print a single-line confirmation that a packet was sent."""
+    timestamp = time.strftime("%H:%M:%S")
+    print(f"[{timestamp}] {GREEN}sent:{RESET} {command} {payload}")
 
 # Initialize environment variables and global service objects
 load_dotenv()                                 # Load configuration from .env file
@@ -84,7 +101,9 @@ def send_play_command(song_name: str):
         "options": {"query": song_name}
     }
     try:
-        return requests.post(url, json=payload).json()
+        response = requests.post(url, json=payload).json()
+        log_packet("/play", payload)
+        return response
     except Exception as e:
         print("Play request failed:", e)
 
@@ -106,7 +125,9 @@ def send_command(command: str):
         "options": {}
     }
     try:
-        return requests.post(url, json=payload).json()
+        response = requests.post(url, json=payload).json()
+        log_packet(command, payload)
+        return response
     except Exception as e:
         print("Command request failed:", e)
 
@@ -119,10 +140,10 @@ def listen_for_voice_commands():
     music playback control and self-termination commands.
     """
     while True:
-        print('Say "Jarvis" to wake...')
+        print(f"{BOLD}Say 'Jarvis' to wake...{RESET}")
         wait_for_wake_word(shared_stream)           # Wait for activation
         tts.stop()   # interrupt any ongoing speech
-        print("Wake word detected.")
+        print(f"{GREEN}Wake word detected.{RESET}")
         tts.speak_async("Yes???")  # Acknowledge wake word
         transcript = ""
         for partial in record_and_transcribe(shared_stream):
@@ -130,7 +151,7 @@ def listen_for_voice_commands():
             print('\r' + partial + ' ' * 20, end='', flush=True)
             transcript = partial          # will end up holding the final yield
         print()                           # newline after the overwrite loop
-        print(f"You said: {transcript}")
+        print(f"{BOLD}You said:{RESET} {transcript}")
 
 
         # Command interpretation and execution
@@ -169,7 +190,10 @@ def main():
     Ensures proper cleanup of audio resources on exit.
     """
     try:
-        print("Starting Jarvis...")
+        print("=" * 40)
+        print(f"{BOLD}      JARVIS VOICE ASSISTANT      {RESET}")
+        print("=" * 40)
+        print()
         listen_for_voice_commands()
     finally:
         # Clean up audio resources
