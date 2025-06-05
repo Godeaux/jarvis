@@ -1,21 +1,36 @@
 # Jarvis
 
 ## Overview
-Jarvis is a hacky script that will listen to your voice and send music bot commands in a Discord window of your choosing.
+Jarvis is a small voice control script that listens for commands and sends them
+to a remote Discord music bot using HTTP requests.
 
-Get a key from [here]([url](https://console.picovoice.ai/signup)) and create a new file called `.env` in the `jarvis` directory after you clone, with contents like so:
+Get a key from [here](https://console.picovoice.ai/signup) and create a new file
+named `.env` in this directory containing your Porcupine and Discord details:
 
-`PORCUPINE_KEY="<YOUR-KEY-HERE>"`
+```
+PORCUPINE_KEY="<YOUR-PORCUPINE-KEY>"
+GUILD_ID="<DISCORD-GUILD-ID>"
+USER_ID="<YOUR-DISCORD-USER-ID>"
+VOICE_CHANNEL_ID="<TARGET-VOICE-CHANNEL-ID>"
+```
 
 ## Setup
-`pip install pynput pygetwindow pyautogui screeninfo pyaudio vosk pvporcupine numpy`
+1. Install the required Python packages:
 
-By default, put Discord on your second monitor, justified to the right so the text box is on the lower-right (told you this was hacky). I use this bot in a voice channel so the textbox is in the bottom right by default, but if your text box is somewhere else (or on a different monitor), update the config section at the top of `jarvis.py`.
+```
+pip install pynput pyaudio vosk pvporcupine numpy pyttsx3 requests python-dotenv
+```
+
+2. Download the Vosk English model from
+   [here](https://alphacephei.com/vosk/models/vosk-model-en-us-0.22.zip) and
+   extract its contents into the provided `model` directory.
+
 
 ## Usage
 `python jarvis.py`
 
-Then say: _"Jarvis, play hampster dance"_ (should use your default audio input) and it will type `/play [tab] hampster dance` in your Discord window! Works with other common commands too:
+Then say: _"Jarvis, play hampster dance"_ (using your default microphone) and Jarvis
+will instruct the music bot to play it. Works with other common commands too:
 
 | 🔤 Phrase              | 🛠️ Action Performed               | 📤 Command Sent                              |
 | ---------------------- | ---------------------------------- | --------------------------------------------- |
